@@ -1,12 +1,20 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { assets } from "../assets/assets";
 import { NavLink, useNavigate } from "react-router-dom";
+import { AppContext } from "../context/AppContext";
 
 const Navbar = () => {
   const navigate = useNavigate();
 
+  const { token, setToken } = useContext(AppContext);
+
   const [showMenu, setShowMenu] = useState(false); //state variables to control the display of the menu
-  const [token, setToken] = useState(true); // state variable to check if the user is logged in
+  // const [token, setToken] = useState(true); // state variable to check if the user is logged in
+
+  const logout = () => {
+    setToken(false);
+    localStorage.removeItem("token");
+  };
 
   return (
     <div className="flex items-center justify-between text-sm py-4 mb-5 border-b border-b-gray-400">
@@ -53,10 +61,7 @@ const Navbar = () => {
                 >
                   My Appointments
                 </p>
-                <p
-                  onClick={() => setToken(false)}
-                  className="hover:text-black cursor-pointer"
-                >
+                <p onClick={logout} className="hover:text-black cursor-pointer">
                   Logout
                 </p>
               </div>
