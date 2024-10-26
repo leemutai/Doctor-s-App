@@ -1,6 +1,8 @@
 import React, { useContext, useState } from "react";
 import { AppContext } from "../context/AppContext";
 import { assets } from "../assets/assets";
+import axios from "axios";
+import { toast } from "react-toastify";
 
 const MyProfile = () => {
   const { userData, setUserData, token, backendUrl, loadUserProfileData } =
@@ -9,7 +11,36 @@ const MyProfile = () => {
   const [isEdit, setEdit] = useState(false);
   const [image, setImage] = useState(false);
 
-  const updateUserProfileData = async () => {};
+  const updateUserProfileData = async () => {
+    try {
+      const formData = new FormData();
+      formData.append("name", userData.name);
+      formData.append("phone", userData.phone);
+      formData.append("address", JSON.stringify(userData.address));
+      formData.append("gender", userData.gender);
+      formData.append("dob", userData.dob);
+
+      image && formData.append("image", image);
+
+      const { data } = await axios.post(
+        backendUrl + "/api/user/update-profile",
+        formData,
+        { headers: { token } }
+      );
+
+      if (data.success) {
+        toast.success(data.message);
+        await loadUserProfileData();
+        setEdit(false); //setIsEdit
+        setImage(false);
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error(error.message);
+    }
+  };
   return (
     userData && (
       <div className="max-w-lg flex flex-col gap-2 text-sm">
@@ -143,7 +174,7 @@ const MyProfile = () => {
           {isEdit ? (
             <button
               className="border border-primary px-8 py-2 rounded-full hover:bg-primary hover:text-white transition-all"
-              onClick={() => setEdit(false)}
+              onClick={updateUserProfileData}
             >
               Save information
             </button>
