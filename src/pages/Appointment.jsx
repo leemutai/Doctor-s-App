@@ -54,11 +54,29 @@ const Appointment = () => {
           minute: "2-digit",
         });
 
-        timeSlots.push({
-          datetime: new Date(currentDate),
-          time: formattedTime,
-        });
+        let day = currentDate.getDate();
+        let month = currentDate.getMonth() + 1;
+        let year = currentDate.getFullYear();
 
+        const slotDate = day + "-" + month + "-" + year;
+
+        const slotTime = formattedTime;
+
+        const isSlotAvailable =
+          docInfo.slots_booked[slotDate] &&
+          docInfo.slots_booked[slotDate].includes(slotTime)
+            ? false
+            : true;
+
+        if (isSlotAvailable) {
+          // add slot to array
+          timeSlots.push({
+            datetime: new Date(currentDate),
+            time: formattedTime,
+          });
+        }
+
+        // increment time by 30 minutes
         currentDate.setMinutes(currentDate.getMinutes() + 30);
       }
 
